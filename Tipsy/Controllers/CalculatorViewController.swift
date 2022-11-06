@@ -22,13 +22,17 @@ class CalculatorViewController: UIViewController {
         twentyPtcButton.isSelected = Bool(sender == twentyPtcButton)
         
         let title = sender.titleLabel?.text
-        let value = (title as! NSString).floatValue / 100
+        let value = (title! as NSString).floatValue / 100
         print(value)
     }
     
-    @IBAction func stepperValueChanged(_ sender: Any) {
+    
+    @IBAction func stepperValueChanged(_ sender: UIStepper) {
+        splitNumberLabel.text = String(format : "%.0f",sender.value)
+        
     }
     @IBAction func calculatePressed(_ sender: Any) {
+        print(splitNumberLabel.text ?? "0")
     }
 }
 
