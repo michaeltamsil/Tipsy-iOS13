@@ -10,6 +10,8 @@ import UIKit
 import Foundation
 
 class CalculatorViewController: UIViewController {
+    
+    var calculate = Calculate()
 
     @IBOutlet weak var billTextField: UITextField!
     @IBOutlet weak var zeroPctButton: UIButton!
@@ -34,31 +36,43 @@ class CalculatorViewController: UIViewController {
     }
     @IBAction func calculatePressed(_ sender: Any) {
         if var bill = Float(billTextField.text!) {
-            var tips :NSNumber?
+            var percent: String = "0.0%"
+            var tips :NSNumber? = 0
+            
             let formatter = NumberFormatter()
             formatter.numberStyle = .percent
             formatter.locale = Locale(identifier: "EN")
             if zeroPctButton.isSelected {
-                tips = formatter.number(from: (zeroPctButton.titleLabel!.text)!)
+                percent = zeroPctButton.titleLabel!.text!
             } else if twentyPtcButton.isSelected {
-                tips = formatter.number(from: twentyPtcButton.titleLabel!.text!)
+                percent = twentyPtcButton.titleLabel!.text!
             } else if tenPctButton.isSelected {
-                tips = formatter.number(from: tenPctButton.titleLabel!.text!)
+                percent = tenPctButton.titleLabel!.text!
             }
+            calculate.percent = percent
+            tips = formatter.number(from: percent)
             
             if let tipsTmp = tips {
                 bill = bill + (bill * Float(truncating: tipsTmp))
                 let splits = Float(splitNumberLabel.text ?? "0.0")
                 bill = bill / (splits ?? 0.0)
-                print(bill)
-            }else {
-                print(0)
+                calculate.bill = bill
+                calculate.splits = splits!
             }
         }
-        
-        
-        
+                
         print(splitNumberLabel.text ?? "0")
+    }
+    @IBAction func showDetail(_ sender: Any) {
+        self.performSegue(withIdentifier: "goToDetail", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "goToDetail" {
+            let resultViewController = segue.destination as! ResultsViewController
+            resultViewController.label = "\(String(describing: calculate.bill))"
+            resultViewController.setting = "Split between \(String(describing: calculate.splits)) people, with \(calculate.percent) tip."
+        }
     }
 }
 
